@@ -1,0 +1,69 @@
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
+}
+
+a {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
+}
+
+a:link {
+    color: #4d75c6;
+}
+
+/* visited link */
+a:visited {
+    color: #4d75c6;
+}
+
+/* mouse over link */
+a:hover {
+    color: #4d75c6;
+}
+
+/* selected link */
+a:active {
+    color: #4d75c6;
+}
+
+.black {
+    color: #242424;
+}
+
+.black-bg {
+    background-color: #242424;
+}
+
+.grey {
+    color: #3d3d3d;
+}
+
+.grey-bg {
+    background-color: #3d3d3d;
+}
+
+.dark-blue {
+    color: #2c4882;
+}
+
+.blue {
+    color: #385ca9;
+}
+
+.light-blue {
+    color: #4d75c6;
+}
+
+.post {
+    width: 90%;
+    height: auto;
+    padding: 10px;
+    margin: 10px auto;
+}
+
+.content-container {
+    margin-top: 10px;
+}
+
+

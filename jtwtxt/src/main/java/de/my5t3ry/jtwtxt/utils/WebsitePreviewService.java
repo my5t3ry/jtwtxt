@@ -62,6 +62,8 @@ public class WebsitePreviewService {
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(true);
         options.addArguments("--window-size=1200x600", "--log-level=3");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
         chromeDriver = new ChromeDriver(options);
     }
 
@@ -80,7 +82,7 @@ public class WebsitePreviewService {
                                 .shootingStrategy(ShootingStrategies.viewportPasting(100))
                                 .takeScreenshot(chromeDriver);
                         try {
-                            ImageIO.write(screenshot.getImage().getSubimage(0, 0, screenshot.getImage().getWidth(), maxPreviewHeight), "jpg", preview);
+                            ImageIO.write(screenshot.getImage().getSubimage(0, 0, screenshot.getImage().getWidth(), screenshot.getImage().getWidth() < maxPreviewHeight ? screenshot.getImage().getWidth() : maxPreviewHeight), "jpg", preview);
                         } catch (IOException e) {
                             log.warn("could not create preview for page ['" + curContent.getUrl() + "']", e);
                         }

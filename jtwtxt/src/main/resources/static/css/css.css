@@ -81,10 +81,9 @@ a:active {
 }
 
 .search-container {
-    width: 83%;
+    width: 80%;
     padding: 10px;
     margin: 10px auto;
-
 }
 
 .website-picture-content-container {
@@ -99,7 +98,6 @@ a:active {
 .picture-content-container {
     width: 600px;
     margin-top: 10px;
-
 }
 
 .picture-content-container img {

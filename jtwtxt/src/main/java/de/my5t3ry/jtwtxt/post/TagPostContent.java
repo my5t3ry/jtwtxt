@@ -12,12 +12,21 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Data
 @NoArgsConstructor
 public class TagPostContent implements IPostContent {
+
+
     @Field(type = FieldType.Text, index = false)
-    private final PostContentType type =PostContentType.TAG;
+    private PostContentType type = PostContentType.MEDIA_TAG;
     @Field(type = FieldType.Text, index = false)
     private String url;
     @Field(type = FieldType.Text, index = false)
     private String description;
+
+
+    public TagPostContent(final String url, final String description, final PostContentType type) {
+        this.type = type;
+        this.url = url;
+        this.description = description;
+    }
 
     public TagPostContent(final String url, final String description) {
         this.url = url;

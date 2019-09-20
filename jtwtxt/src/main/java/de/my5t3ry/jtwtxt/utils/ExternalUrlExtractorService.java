@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
  * Date: 20.09.19 05:27
  */
 @Component
-public class UrlExtractorService {
+public class ExternalUrlExtractorService {
 
     private Pattern patternUrl;
 
     private static final String urlRegex = "https?://\\S+\\s?";
 
-    public UrlExtractorService() {
+    public ExternalUrlExtractorService() {
         patternUrl = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
     }
 

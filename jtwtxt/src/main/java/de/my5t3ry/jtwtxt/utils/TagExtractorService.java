@@ -1,6 +1,7 @@
 package de.my5t3ry.jtwtxt.utils;
 
 import de.my5t3ry.jtwtxt.html.TemplateService;
+import de.my5t3ry.jtwtxt.post.PostContentType;
 import de.my5t3ry.jtwtxt.post.TagPostContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ public class TagExtractorService {
             final String tag = userTagMatcher.group(1).replace("@[", "").replace("]", "");
             final String[] split = tag.split(":");
             if (split.length == 3) {
-                result = stripedString.replaceAll(userTagRegex, templateService.getContent(new TagPostContent("https://facebook.com/" + split[2], split[2])));
+                result = stripedString.replaceAll(userTagRegex, templateService.getContent(new TagPostContent("https://facebook.com/" + split[2], split[2], PostContentType.PERSON_TAG)));
             } else {
                 result = stripedString;
             }

@@ -1,7 +1,7 @@
 package de.my5t3ry.jtwtxt.post;
 
 import de.my5t3ry.jtwtxt.utils.TagExtractorService;
-import de.my5t3ry.jtwtxt.utils.UrlExtractorService;
+import de.my5t3ry.jtwtxt.utils.ExternalUrlExtractorService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class Post {
     @Transient
     public static SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Transient
-    private final UrlExtractorService urlExtractorService = new UrlExtractorService();
+    private final ExternalUrlExtractorService externalUrlExtractorService = new ExternalUrlExtractorService();
     @Transient
     private final TagExtractorService tagExtractorService = new TagExtractorService();
 

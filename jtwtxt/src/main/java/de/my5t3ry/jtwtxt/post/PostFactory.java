@@ -1,7 +1,7 @@
 package de.my5t3ry.jtwtxt.post;
 
 import de.my5t3ry.jtwtxt.utils.TagExtractorService;
-import de.my5t3ry.jtwtxt.utils.UrlExtractorService;
+import de.my5t3ry.jtwtxt.utils.ExternalUrlExtractorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class PostFactory {
     @Autowired
     private TagExtractorService tagExtractorService;
     @Autowired
-    private UrlExtractorService urlExtractorService;
+    private ExternalUrlExtractorService externalUrlExtractorService;
 
     public Post build(final String curPostLine) {
         final Post result = new Post();
@@ -43,7 +43,7 @@ public class PostFactory {
 
     private List<? extends IPostContent> parseExternalContent(final String curPostLine) {
         final List<IPostContent> result = new ArrayList<IPostContent>();
-        result.addAll(urlExtractorService.grabExternalLinks(curPostLine));
+        result.addAll(externalUrlExtractorService.grabExternalLinks(curPostLine));
         return result;
     }
 
@@ -73,7 +73,7 @@ public class PostFactory {
         if (StringUtils.isEmpty(copy)) {
             log.error("could not parse copy ['" + copy + "']");
         } else {
-            return tagExtractorService.stripTags(urlExtractorService.stripUrls(copy)).replaceAll("[ \\t]+$", "");
+            return tagExtractorService.stripTags(externalUrlExtractorService.stripUrls(copy)).replaceAll("[ \\t]+$", "");
         }
         return "";
     }

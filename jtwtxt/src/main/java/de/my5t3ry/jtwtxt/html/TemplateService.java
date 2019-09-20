@@ -2,6 +2,7 @@ package de.my5t3ry.jtwtxt.html;
 
 import de.my5t3ry.jtwtxt.post.IPostContent;
 import de.my5t3ry.jtwtxt.post.Post;
+import de.my5t3ry.jtwtxt.post.PostContentType;
 import org.antlr.stringtemplate.StringTemplate;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -60,6 +61,10 @@ public class TemplateService {
     public String getContent(final IPostContent curContent) {
         final Map<String, String> attributes = Map.of("url", curContent.getUrl(),
                 "description", curContent.getDescription());
-        return getTemplate("content.html", attributes);
+        String contentTemplate = "content.html";
+        if (curContent.getType().equals(PostContentType.PERSON_TAG)) {
+            contentTemplate = "inline-content.html";
+        }
+        return getTemplate(contentTemplate, attributes);
     }
 }

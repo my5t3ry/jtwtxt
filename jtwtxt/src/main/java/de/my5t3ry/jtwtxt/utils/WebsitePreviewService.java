@@ -82,7 +82,7 @@ public class WebsitePreviewService {
                                 .shootingStrategy(ShootingStrategies.viewportPasting(100))
                                 .takeScreenshot(chromeDriver);
                         try {
-                            ImageIO.write(screenshot.getImage().getSubimage(0, 0, screenshot.getImage().getWidth(), screenshot.getImage().getWidth() < maxPreviewHeight ? screenshot.getImage().getWidth() : maxPreviewHeight), "jpg", preview);
+                            ImageIO.write(screenshot.getImage().getSubimage(0, 0, screenshot.getImage().getWidth() , screenshot.getImage().getHeight() < maxPreviewHeight ? screenshot.getImage().getHeight() : maxPreviewHeight), "jpg", preview);
                         } catch (IOException e) {
                             log.warn("could not create preview for page ['" + curContent.getUrl() + "']", e);
                         }

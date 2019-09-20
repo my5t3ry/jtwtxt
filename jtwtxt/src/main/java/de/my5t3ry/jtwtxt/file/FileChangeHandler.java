@@ -7,6 +7,7 @@ import de.my5t3ry.jtwtxt.utils.WebsitePreviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
  */
 @Component
 @Slf4j
+@Scope("singleton")
 public class FileChangeHandler implements IHandleTwTxtFileChanges {
     @Autowired
     private PostRepository postRepository;
@@ -37,15 +39,21 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
     @Value("${config.html.cache-dir}")
     private File htmlCachePath;
 
+    private boolean active = false;
+
     @Override
     public void handle(final File file) {
-        log.info("--> ['" + file.getAbsolutePath() + "']" + " changed, reimporting posts");
-        postRepository.deleteAll();
-        final List<String> postLines = readLineByLineJava8(file);
-        buildPosts(postLines);
-        final File cacheDir = htmlCachePath;
-        if (cacheDir.exists()) {
-            Arrays.stream(cacheDir.listFiles()).forEach(File::delete);
+        if (active == false) {
+
+            active = true;
+            log.info("--> ['" + file.getAbsolutePath() + "']" + " changed, reimporting posts");
+            postRepository.deleteAll();
+            final List<String> postLines = readLineByLineJava8(file);
+            buildPosts(postLines);
+            final File cacheDir = htmlCachePath;
+            if (cacheDir.exists()) {
+                Arrays.stream(cacheDir.listFiles()).forEach(File::delete);
+            }
         }
     }
 
@@ -62,6 +70,7 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
         });
         websitePreviewService.fetchMissingPreviews();
         log.info("--> ['" + i[0] + "']" + " posts imported");
+        active = false;
     }
 
     private static List<String> readLineByLineJava8(File file) {

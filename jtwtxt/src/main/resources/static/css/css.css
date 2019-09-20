@@ -69,3 +69,18 @@ a:active {
 .iframe-container {
     margin: 10px auto;
 }
+
+.search-container {
+    width: 91%;
+    padding: 10px;
+    margin: 10px auto;
+
+}
+
+.picture-content-container {
+    width: 600px;
+}
+
+.picture-content-container img {
+    width: 100%;
+}

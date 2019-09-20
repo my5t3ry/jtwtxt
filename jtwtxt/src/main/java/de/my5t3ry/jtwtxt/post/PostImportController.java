@@ -4,8 +4,8 @@ import de.my5t3ry.jtwtxt.file.FileWatcher;
 import de.my5t3ry.jtwtxt.file.IHandleTwTxtFileChanges;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -18,18 +18,17 @@ import java.io.File;
 @Slf4j
 public class PostImportController {
     @Autowired
-    private FileWatcher fileWatcher ;
+    private FileWatcher fileWatcher;
 
     @Autowired
     private IHandleTwTxtFileChanges fileChangeHandler;
+    @Value("${config.twtxt-dir}")
+    private File twtxtDir;
+
 
     @PostConstruct
     public void init() {
-        final String twtxtFilePath = System.getProperty("config.twtxt-file");
-        if (StringUtils.isEmpty(twtxtFilePath)) {
-            throw new IllegalStateException("Please configure the config.twtxt-file vm parameter ['-Dconfig.twtxt-file=/path']");
-        }
-        fileWatcher.run(new File(twtxtFilePath), fileChangeHandler);
+        fileWatcher.run(new File(twtxtDir, "twtxt.txt"), fileChangeHandler);
     }
 
 }

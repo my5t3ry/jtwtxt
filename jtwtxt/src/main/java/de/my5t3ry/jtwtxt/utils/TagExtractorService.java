@@ -28,9 +28,10 @@ public class TagExtractorService {
         userTagPatternUrl = Pattern.compile(userTagRegex, Pattern.CASE_INSENSITIVE);
     }
 
-    public Vector<TagPostContent> grabExternalLinks(String string) {
+    public Vector<TagPostContent> grabTagLinks(String string) {
+        final String replacedString = string.replaceAll("\\[LF\\]", " <br> ");
         Vector<TagPostContent> result = new Vector<>();
-        final Matcher mediaTagMatcher = mediaTagPatternUrl.matcher(string);
+        final Matcher mediaTagMatcher = mediaTagPatternUrl.matcher(replacedString);
         while (mediaTagMatcher.find()) {
             final String tag = mediaTagMatcher.group(1).replace("@<", "").replace(">", "");
             final String[] split = tag.split(" ");
@@ -42,6 +43,7 @@ public class TagExtractorService {
         }
         return result;
     }
+
 
     public String stripTags(String string) {
         String result = string.replaceAll(mediaTagRegex, "");

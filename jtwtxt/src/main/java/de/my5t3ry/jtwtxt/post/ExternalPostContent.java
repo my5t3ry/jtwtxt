@@ -15,29 +15,33 @@ import java.util.Objects;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExternalPostContent implements IPostContent {
-    @Field(type = FieldType.Text, index = false)
-    private PostContentType type = PostContentType.EXTERNAL;
+public class ExternalPostContent extends AbstractContent {
+    @Field(type = FieldType.Text)
+    private PostContentType type = PostContentType.WEBSITE_EXTERNAL;
     @Field(type = FieldType.Text, index = false)
     private String url;
-    @Field(type = FieldType.Text, index = false)
+    @Field(type = FieldType.Text)
     private String description;
-
-
-    public ExternalPostContent(final String url, final PostContentType type) {
-        this.url = url;
-        this.type = type;
-        this.description = url;
-    }
 
     public ExternalPostContent(final String url) {
         this.url = url;
+        this.type = determineType(url);
         this.description = url;
+    }
+
+
+    private PostContentType determineType(final String url) {
+        if (url.contains("youtu")) {
+            return PostContentType.YOUTUBE_EXTERNAL;
+        } else if (url.contains("soundcloud")) {
+            return PostContentType.SOUNDCLOUD_EXTERNAL;
+        }
+        return PostContentType.WEBSITE_EXTERNAL;
     }
 
     public String getUrl() {
         if (type.equals(PostContentType.YOUTUBE_EXTERNAL)) {
-            return url.replace("watch?v=", "embed/").replace("youtu.be","youtube.com/embed");
+            return url.replace("watch?v=", "embed/").replace("youtu.be", "youtube.com/embed");
         }
         return url;
     }
@@ -46,7 +50,7 @@ public class ExternalPostContent implements IPostContent {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final IPostContent that = (IPostContent) o;
+        final AbstractContent that = (AbstractContent) o;
         return Objects.equals(url, that.getUrl());
     }
 

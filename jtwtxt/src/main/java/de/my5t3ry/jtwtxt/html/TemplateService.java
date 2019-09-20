@@ -1,18 +1,20 @@
 package de.my5t3ry.jtwtxt.html;
 
-import de.my5t3ry.jtwtxt.post.IPostContent;
+import de.my5t3ry.jtwtxt.post.AbstractContent;
 import de.my5t3ry.jtwtxt.post.Post;
 import org.antlr.stringtemplate.StringTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import javax.annotation.PostConstruct;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -23,6 +25,17 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @Component
 public class TemplateService {
+
+
+    @Value("${config.html.cache-dir}")
+    private File htmlCacheDirPath;
+
+    @PostConstruct
+    public void init() {
+        if (!htmlCacheDirPath.exists()) {
+            htmlCacheDirPath.mkdir();
+        }
+    }
 
     public String getTemplate(String path, final Map<String, String> posts) {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -55,7 +68,7 @@ public class TemplateService {
         return stringBuilder.toString();
     }
 
-    public String getContent(final IPostContent curContent) {
+    public String getContent(final AbstractContent curContent) {
         final Map<String, String> attributes = Map.of("url", curContent.getUrl(),
                 "description", curContent.getDescription());
         String contentTemplate;
@@ -69,9 +82,41 @@ public class TemplateService {
             case SOUNDCLOUD_EXTERNAL:
                 contentTemplate = "soundcloud-content.html";
                 break;
+            case PICTURE_MEDIA_TAG:
+                contentTemplate = "picture-content.html";
+                break;
             default:
                 contentTemplate = "content.html";
         }
         return getTemplate(contentTemplate, attributes);
     }
+
+    public String fetchHtml(final Iterable<Post> posts, final String query) {
+        final File cacheFile = new File(htmlCacheDirPath, query);
+        if (cacheFile.exists()) {
+            try {
+                return Files.readString(cacheFile.toPath());
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not read cache file ['" + cacheFile.getAbsolutePath() + "']", e);
+            }
+        } else {
+            try {
+                final Map<String, String> attributes = Map.of("posts", getPosts(posts));
+                final String htmlString = getTemplate("index.html", attributes);
+                Files.writeString(cacheFile.toPath(), htmlString, new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING});
+                return htmlString;
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not rebuild cache file", e);
+            }
+        }
+    }
+
+    private String getPosts(final Iterable<Post> posts) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        posts.forEach(curPost -> {
+            stringBuilder.append(getPost(curPost));
+        });
+        return stringBuilder.toString();
+    }
+
 }

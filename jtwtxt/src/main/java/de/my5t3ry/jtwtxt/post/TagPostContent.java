@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -13,11 +14,11 @@ import java.util.Objects;
  */
 @Data
 @NoArgsConstructor
-public class TagPostContent implements IPostContent {
+public class TagPostContent extends AbstractContent  {
 
 
     @Field(type = FieldType.Text, index = false)
-    private PostContentType type = PostContentType.MEDIA_TAG;
+    private PostContentType type;
     @Field(type = FieldType.Text, index = false)
     private String url;
     @Field(type = FieldType.Text, index = false)
@@ -32,16 +33,25 @@ public class TagPostContent implements IPostContent {
 
     public TagPostContent(final String url, final String description) {
         this.url = url;
+        this.type = determineType(url);
         this.description = description;
+    }
+
+    private PostContentType determineType(final String url) {
+        if (Arrays.stream(new String[]{"gif", "jpg", "jpeg", "png"}).parallel().anyMatch(url.toLowerCase()::contains)) {
+            return PostContentType.PICTURE_MEDIA_TAG;
+        }
+        return PostContentType.VIDEO_MEDIA_TAG;
     }
 
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final IPostContent that = (IPostContent) o;
+        final AbstractContent that = (AbstractContent) o;
         return Objects.equals(url, that.getUrl());
     }
+
 
     @Override
     public int hashCode() {

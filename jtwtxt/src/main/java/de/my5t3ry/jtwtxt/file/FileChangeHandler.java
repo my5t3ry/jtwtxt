@@ -3,6 +3,7 @@ package de.my5t3ry.jtwtxt.file;
 import de.my5t3ry.jtwtxt.post.Post;
 import de.my5t3ry.jtwtxt.post.PostFactory;
 import de.my5t3ry.jtwtxt.post.PostRepository;
+import de.my5t3ry.jtwtxt.utils.WebsitePreviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -26,12 +28,14 @@ import java.util.stream.Stream;
 public class FileChangeHandler implements IHandleTwTxtFileChanges {
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private WebsitePreviewService websitePreviewService;
 
     @Autowired
     private PostFactory postFactory;
 
-    @Value("${config.html.cache-file}")
-    private String htmlCacheFilePath;
+    @Value("${config.html.cache-dir}")
+    private File htmlCachePath;
 
     @Override
     public void handle(final File file) {
@@ -39,9 +43,9 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
         postRepository.deleteAll();
         final List<String> postLines = readLineByLineJava8(file);
         buildPosts(postLines);
-        final File cacheFile = new File(htmlCacheFilePath);
-        if (cacheFile.exists()) {
-            cacheFile.delete();
+        final File cacheDir = htmlCachePath;
+        if (cacheDir.exists()) {
+            Arrays.stream(cacheDir.listFiles()).forEach(File::delete);
         }
     }
 
@@ -56,6 +60,7 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
                 }
             }
         });
+        websitePreviewService.fetchMissingPreviews();
         log.info("--> ['" + i[0] + "']" + " posts imported");
     }
 

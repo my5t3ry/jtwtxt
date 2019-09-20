@@ -30,9 +30,9 @@ public class PostFactory {
     public Post build(final String curPostLine) {
         final Post result = new Post();
         result.setCreatedOn(parseDate(curPostLine));
+        result.setCopy(parseCopy(curPostLine));
         result.addContent(parseExternalContent(curPostLine));
         result.addContent(parseTagContent(curPostLine));
-        result.setCopy(parseCopy(curPostLine));
         final String owner = System.getProperty("config.owner");
         if (StringUtils.isEmpty(owner)) {
             throw new IllegalStateException("Please configure the config.owner = vm parameter ['-Dconfig.owner=yourNamer']");
@@ -41,15 +41,15 @@ public class PostFactory {
         return result;
     }
 
-    private List<? extends IPostContent> parseExternalContent(final String curPostLine) {
-        final List<IPostContent> result = new ArrayList<IPostContent>();
+    private List<? extends AbstractContent> parseExternalContent(final String curPostLine) {
+        final List<AbstractContent> result = new ArrayList<AbstractContent>();
         result.addAll(externalUrlExtractorService.grabExternalLinks(curPostLine));
         return result;
     }
 
-    private List<? extends IPostContent> parseTagContent(final String curPostLine) {
-        final List<IPostContent> result = new ArrayList<>();
-        result.addAll(tagExtractorService.grabExternalLinks(curPostLine));
+    private List<? extends AbstractContent> parseTagContent(final String curPostLine) {
+        final List<AbstractContent> result = new ArrayList<>();
+        result.addAll(tagExtractorService.grabTagLinks(curPostLine));
         return result;
     }
 
@@ -68,7 +68,7 @@ public class PostFactory {
     }
 
     private String parseCopy(final String curPostLine) {
-        String copy = curPostLine.split("\t")[1].replaceAll("\\[LF\\]", "<br>");
+        String copy = curPostLine.split("\t")[1].replaceAll("\\[LF\\]", " <br> ");
         copy = copy.replaceAll("\\-\\>", "");
         if (StringUtils.isEmpty(copy)) {
             log.error("could not parse copy ['" + copy + "']");

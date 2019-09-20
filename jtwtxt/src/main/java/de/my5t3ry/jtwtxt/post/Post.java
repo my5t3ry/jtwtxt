@@ -27,15 +27,15 @@ public class Post {
     @Id
     @Field(type = FieldType.Text, store = true)
     private String id;
-    @Field(type = FieldType.Date, index = false)
+    @Field(type = FieldType.Date)
     private Date createdOn;
     @Field(type = FieldType.Nested)
-    private Set<IPostContent> content = new HashSet<>();
-    @Field(type = FieldType.Text, index = false)
+    private Set<AbstractContent> content = new HashSet<>();
+    @Field(type = FieldType.Text)
     private String title;
-    @Field(type = FieldType.Text, index = false)
+    @Field(type = FieldType.Text)
     private String owner;
-    @Field(type = FieldType.Text, index = false)
+    @Field(type = FieldType.Text)
     private String copy;
     @Transient
     public static SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -44,12 +44,11 @@ public class Post {
     @Transient
     private final TagExtractorService tagExtractorService = new TagExtractorService();
 
-
     public String getFormatedCreatedOn() {
         return dateParser.format(createdOn);
     }
 
-    public void addContent(final List<? extends IPostContent> parseExternalContent) {
+    public void addContent(final List<? extends AbstractContent> parseExternalContent) {
         this.content.addAll(parseExternalContent);
     }
 

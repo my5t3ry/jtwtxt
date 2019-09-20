@@ -14,7 +14,7 @@ public class UrlExtractor {
 
     private Pattern patternUrl;
 
-    private static final String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+    private static final String urlRegex = "https?://\\S+\\s?";
 
     public UrlExtractor() {
         patternUrl = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);

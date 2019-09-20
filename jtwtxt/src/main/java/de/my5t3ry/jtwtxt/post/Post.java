@@ -97,7 +97,7 @@ public class Post {
         if (StringUtils.isEmpty(copy)) {
             log.error("could not parse copy ['" + copy + "']");
         } else {
-            return tagExtractor.stripTags(urlExtractor.stripUrls(copy));
+            return tagExtractor.stripTags(urlExtractor.stripUrls(copy)).replaceAll("[ \\t]+$", "");
         }
         return "";
     }

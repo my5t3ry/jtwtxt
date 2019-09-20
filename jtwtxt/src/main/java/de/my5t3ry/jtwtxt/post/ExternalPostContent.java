@@ -37,7 +37,7 @@ public class ExternalPostContent implements IPostContent {
 
     public String getUrl() {
         if (type.equals(PostContentType.YOUTUBE_EXTERNAL)) {
-            return url.replace("watch?v=", "embed/");
+            return url.replace("watch?v=", "embed/").replace("youtu.be","youtube.com/embed");
         }
         return url;
     }

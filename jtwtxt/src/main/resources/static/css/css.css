@@ -1,11 +1,11 @@
 body {
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 a {
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 a:link {
@@ -66,6 +66,10 @@ a:active {
     margin-top: 10px;
 }
 
+.website-content-container {
+    margin: 10px 0;
+}
+
 .iframe-container {
     margin: 10px auto;
 }
@@ -77,8 +81,19 @@ a:active {
 
 }
 
+.website-picture-content-container {
+    margin-top: 10px;
+    width: 600px;
+}
+
+.website-picture-content-container img {
+    width: 100%;
+}
+
 .picture-content-container {
     width: 600px;
+    margin-top: 10px;
+
 }
 
 .picture-content-container img {

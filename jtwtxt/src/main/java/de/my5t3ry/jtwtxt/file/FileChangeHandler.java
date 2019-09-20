@@ -4,6 +4,7 @@ import de.my5t3ry.jtwtxt.post.Post;
 import de.my5t3ry.jtwtxt.post.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -25,12 +26,19 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
     @Autowired
     private PostRepository postRepository;
 
+    @Value("${config.html.cache-file}")
+    private String htmlCacheFilePath;
+
     @Override
     public void handle(final File file) {
         log.info("--> ['" + file.getAbsolutePath() + "']" + " changed, reimporting posts");
         postRepository.deleteAll();
         final List<String> postLines = readLineByLineJava8(file);
         buildPosts(postLines);
+        final File cacheFile = new File(htmlCacheFilePath);
+        if (cacheFile.exists()) {
+            cacheFile.delete();
+        }
     }
 
     private void buildPosts(final List<String> postLines) {

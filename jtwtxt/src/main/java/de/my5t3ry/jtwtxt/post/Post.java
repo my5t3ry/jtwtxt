@@ -27,6 +27,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class Post {
+
     @Id
     @Field(type = FieldType.Text, store = true)
     private String id;

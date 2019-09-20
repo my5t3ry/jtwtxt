@@ -22,6 +22,7 @@ public class FileWatcher {
     private IHandleTwTxtFileChanges service;
     private AtomicBoolean stop = new AtomicBoolean(false);
 
+
     public boolean isStopped() {
         return stop.get();
     }

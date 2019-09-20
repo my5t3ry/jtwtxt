@@ -2,11 +2,18 @@ package de.my5t3ry.jtwtxt.html;
 
 import de.my5t3ry.jtwtxt.post.Post;
 import de.my5t3ry.jtwtxt.post.PostRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 /**
@@ -14,20 +21,37 @@ import java.util.Map;
  * Date: 20.09.19 07:38
  */
 @RestController
+@Slf4j
 public class HtmlController {
 
     @Autowired
     private TemplateService templateService;
 
+    @Value("${config.html.cache-file}")
+    private String htmlCacheFilePath;
     @Autowired
     private PostRepository postRepository;
 
     @ResponseBody
     @RequestMapping("/")
-
-    public String welcome() {
-        final Map<String, String> attributes = Map.of("posts", getPosts());
-        return templateService.getTemplate("index.html", attributes);
+    public String get() {
+        final File cacheFile = new File(htmlCacheFilePath);
+        if (cacheFile.exists()) {
+            try {
+                return Files.readString(cacheFile.toPath());
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not read cache file ['" + cacheFile.getAbsolutePath() + "']", e);
+            }
+        } else {
+            try {
+                final Map<String, String> attributes = Map.of("posts", getPosts());
+                final String htmlString = templateService.getTemplate("index.html", attributes);
+                Files.writeString(cacheFile.toPath(), htmlString, new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING});
+                return htmlString;
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not rebuild cache file", e);
+            }
+        }
     }
 
     private String getPosts() {
@@ -36,7 +60,7 @@ public class HtmlController {
             final Map<String, String> attributes = Map.of("copy", curPost.getCopy(),
                     "created", curPost.getFormatedCreatedOn(),
                     "content", getContent(curPost));
-            stringBuilder.append(templateService.getTemplate("post.html",attributes));
+            stringBuilder.append(templateService.getTemplate("post.html", attributes));
         });
         return stringBuilder.toString();
     }

@@ -16,6 +16,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -106,10 +107,11 @@ public class TemplateService {
             }
         } else {
             try {
-                final Map<String, String> attributes = Map.of("posts", getPosts(posts),
-                        "index", "?index=".concat(String.valueOf(index)));
+                final Map<String, String> attributes = new HashMap<>(Map.of("posts", getPosts(posts),
+                        "index", "?index=".concat(String.valueOf(index + 1))));
                 if (!StringUtils.isEmpty(query)) {
-                    attributes.put("query", "&search=" + query);
+                    attributes.put("query", "&qyy=" + query);
+                    attributes.put("searchcontext", "search");
                 }
                 final String htmlString = getTemplate("index.html", attributes);
                 Files.writeString(cacheFile.toPath(), htmlString, new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING});

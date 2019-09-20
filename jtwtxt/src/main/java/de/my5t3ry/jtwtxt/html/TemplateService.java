@@ -26,7 +26,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Component
 public class TemplateService {
 
-
     @Value("${config.html.cache-dir}")
     private File htmlCacheDirPath;
 
@@ -56,11 +55,11 @@ public class TemplateService {
     public String getPost(final Post curPost) {
         final Map<String, String> attributes = Map.of("copy", curPost.getCopy(),
                 "created", curPost.getFormatedCreatedOn(),
-                "content", getContent(curPost));
+                "content", getContents(curPost));
         return getTemplate("post.html", attributes);
     }
 
-    private String getContent(final Post curPost) {
+    private String getContents(final Post curPost) {
         final StringBuilder stringBuilder = new StringBuilder();
         curPost.getContent().forEach(curContent -> {
             stringBuilder.append(getContent(curContent));
@@ -70,7 +69,8 @@ public class TemplateService {
 
     public String getContent(final AbstractContent curContent) {
         final Map<String, String> attributes = Map.of("url", curContent.getUrl(),
-                "description", curContent.getDescription());
+                "description", curContent.getDescription(),
+                "hash", curContent.getHashFromUrl());
         String contentTemplate;
         switch (curContent.getType()) {
             case YOUTUBE_EXTERNAL:
@@ -84,6 +84,9 @@ public class TemplateService {
                 break;
             case PICTURE_MEDIA_TAG:
                 contentTemplate = "picture-content.html";
+                break;
+            case WEBSITE_EXTERNAL:
+                contentTemplate = "website-content.html";
                 break;
             default:
                 contentTemplate = "content.html";
@@ -118,5 +121,4 @@ public class TemplateService {
         });
         return stringBuilder.toString();
     }
-
 }

@@ -56,10 +56,16 @@ a:active {
 }
 
 .post {
-    width: 90%;
+    width: 80%;
     height: auto;
-    padding: 10px;
+    padding: 20px;
     margin: 10px auto;
+}
+
+.post-meta-container {
+    font-style: italic;
+    font-size: 12px;
+
 }
 
 .content-container {
@@ -75,7 +81,7 @@ a:active {
 }
 
 .search-container {
-    width: 91%;
+    width: 81%;
     padding: 10px;
     margin: 10px auto;
 
@@ -98,4 +104,10 @@ a:active {
 
 .picture-content-container img {
     width: 100%;
+}
+
+.more-container {
+    width: 20%;
+    margin: 30px auto;
+    color: #4d75c6;
 }

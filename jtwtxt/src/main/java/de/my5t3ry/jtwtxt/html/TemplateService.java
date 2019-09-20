@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -54,7 +55,8 @@ public class TemplateService {
 
     public String getPost(final Post curPost) {
         final Map<String, String> attributes = Map.of("copy", curPost.getCopy(),
-                "created", curPost.getFormatedCreatedOn(),
+                "user", curPost.getOwner(),
+                "createdOn", curPost.getFormatedCreatedOn(),
                 "content", getContents(curPost));
         return getTemplate("post.html", attributes);
     }
@@ -94,8 +96,8 @@ public class TemplateService {
         return getTemplate(contentTemplate, attributes);
     }
 
-    public String fetchHtml(final Iterable<Post> posts, final String query) {
-        final File cacheFile = new File(htmlCacheDirPath, query);
+    public String fetchHtml(final Iterable<Post> posts, final String query, final int index) {
+        final File cacheFile = new File(htmlCacheDirPath, query.concat("-".concat(String.valueOf(index))));
         if (cacheFile.exists()) {
             try {
                 return Files.readString(cacheFile.toPath());
@@ -104,7 +106,11 @@ public class TemplateService {
             }
         } else {
             try {
-                final Map<String, String> attributes = Map.of("posts", getPosts(posts));
+                final Map<String, String> attributes = Map.of("posts", getPosts(posts),
+                        "index", "?index=".concat(String.valueOf(index)));
+                if (!StringUtils.isEmpty(query)) {
+                    attributes.put("query", "&search=" + query);
+                }
                 final String htmlString = getTemplate("index.html", attributes);
                 Files.writeString(cacheFile.toPath(), htmlString, new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING});
                 return htmlString;
@@ -113,6 +119,7 @@ public class TemplateService {
             }
         }
     }
+
 
     private String getPosts(final Iterable<Post> posts) {
         final StringBuilder stringBuilder = new StringBuilder();

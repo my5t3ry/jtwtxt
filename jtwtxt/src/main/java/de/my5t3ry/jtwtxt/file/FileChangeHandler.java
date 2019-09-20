@@ -1,6 +1,6 @@
 package de.my5t3ry.jtwtxt.file;
 
-import de.my5t3ry.jtwtxt.post.Post;
+import de.my5t3ry.jtwtxt.post.PostFactory;
 import de.my5t3ry.jtwtxt.post.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,9 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private PostFactory postFactory;
+
     @Value("${config.html.cache-file}")
     private String htmlCacheFilePath;
 
@@ -45,12 +48,11 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
         final Integer[] i = {0};
         postLines.forEach(curPostLine -> {
             if (!StringUtils.isEmpty(curPostLine)) {
-                postRepository.save(new Post(curPostLine));
+                postRepository.save(postFactory.build(curPostLine));
                 i[0]++;
             }
         });
         log.info("--> ['" + i[0] + "']" + " posts imported");
-
     }
 
     private static List<String> readLineByLineJava8(File file) {
@@ -59,7 +61,6 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
             stream.forEach(s -> result.add(s));
         } catch (IOException e) {
             log.error("could not read file ['" + file.getAbsolutePath() + "']", e);
-
         }
         return result;
     }

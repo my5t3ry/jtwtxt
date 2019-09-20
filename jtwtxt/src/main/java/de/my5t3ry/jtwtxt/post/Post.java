@@ -1,7 +1,7 @@
 package de.my5t3ry.jtwtxt.post;
 
-import de.my5t3ry.jtwtxt.utils.TagExtractor;
-import de.my5t3ry.jtwtxt.utils.UrlExtractor;
+import de.my5t3ry.jtwtxt.utils.TagExtractorService;
+import de.my5t3ry.jtwtxt.utils.UrlExtractorService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,12 +9,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.util.StringUtils;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -42,63 +39,19 @@ public class Post {
     @Field(type = FieldType.Text, index = false)
     private String copy;
     @Transient
-    SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Transient
-    private final UrlExtractor urlExtractor = new UrlExtractor();
+    private final UrlExtractorService urlExtractorService = new UrlExtractorService();
     @Transient
-    private final TagExtractor tagExtractor = new TagExtractor();
+    private final TagExtractorService tagExtractorService = new TagExtractorService();
 
 
-    public Post(final String curPostLine) {
-        this.createdOn = parseDate(curPostLine);
-        this.content.addAll(parseExternalContent(curPostLine));
-        this.content.addAll(parseTagContent(curPostLine));
-        this.copy = parseCopy(curPostLine);
-        final String owner = System.getProperty("config.owner");
-        if (StringUtils.isEmpty(owner)) {
-            throw new IllegalStateException("Please configure the config.owner = vm parameter ['-Dconfig.owner=yourNamer']");
-        }
-        this.owner = owner;
-    }
-
-    private Collection<? extends IPostContent> parseExternalContent(final String curPostLine) {
-        final List<IPostContent> result = new ArrayList<IPostContent>();
-        result.addAll(urlExtractor.grabExternalLinks(curPostLine));
-        return result;
-    }
-
-    private Collection<? extends IPostContent> parseTagContent(final String curPostLine) {
-        final List<IPostContent> result = new ArrayList<>();
-        result.addAll(tagExtractor.grabExternalLinks(curPostLine));
-        return result;
-    }
-
-    private Date parseDate(final String curPostLine) {
-        final String dateString = curPostLine.split("\t")[0];
-        if (StringUtils.isEmpty(dateString)) {
-            log.error("could not parse empty date ['" + dateString + "']");
-        } else {
-            try {
-                return dateParser.parse(dateString.replace("T", " "));
-            } catch (ParseException e) {
-                log.error("could not parse date ['" + dateString + "']", e);
-            }
-        }
-        return new Date();
-    }
 
     public String getFormatedCreatedOn() {
         return dateParser.format(createdOn);
     }
 
-    private String parseCopy(final String curPostLine) {
-        String copy = curPostLine.split("\t")[1].replaceAll("\\[LF\\]", "<br>");
-        copy = copy.replaceAll("\\-\\>", "");
-        if (StringUtils.isEmpty(copy)) {
-            log.error("could not parse copy ['" + copy + "']");
-        } else {
-            return tagExtractor.stripTags(urlExtractor.stripUrls(copy)).replaceAll("[ \\t]+$", "");
-        }
-        return "";
+    public void addContent(final List<? extends IPostContent> parseExternalContent) {
+        this.content.addAll(parseExternalContent);
     }
 }

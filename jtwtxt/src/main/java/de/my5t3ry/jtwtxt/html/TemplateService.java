@@ -1,5 +1,7 @@
 package de.my5t3ry.jtwtxt.html;
 
+import de.my5t3ry.jtwtxt.post.IPostContent;
+import de.my5t3ry.jtwtxt.post.Post;
 import org.antlr.stringtemplate.StringTemplate;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -11,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -37,5 +38,28 @@ public class TemplateService {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+
+    public String getPost(final Post curPost) {
+        final Map<String, String> attributes = Map.of("copy", curPost.getCopy(),
+                "created", curPost.getFormatedCreatedOn(),
+                "content", getContent(curPost));
+        return getTemplate("post.html", attributes);
+    }
+
+
+    private String getContent(final Post curPost) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        curPost.getContent().forEach(curContent -> {
+            stringBuilder.append(getContent(curContent));
+        });
+        return stringBuilder.toString();
+    }
+
+    public String getContent(final IPostContent curContent) {
+        final Map<String, String> attributes = Map.of("url", curContent.getUrl(),
+                "description", curContent.getDescription());
+        return getTemplate("content.html", attributes);
     }
 }

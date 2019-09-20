@@ -1,6 +1,7 @@
 package de.my5t3ry.jtwtxt.utils;
 
 import de.my5t3ry.jtwtxt.post.ExternalPostContent;
+import org.springframework.stereotype.Component;
 
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -10,13 +11,14 @@ import java.util.regex.Pattern;
  * User: my5t3ry
  * Date: 20.09.19 05:27
  */
-public class UrlExtractor {
+@Component
+public class UrlExtractorService {
 
     private Pattern patternUrl;
 
     private static final String urlRegex = "https?://\\S+\\s?";
 
-    public UrlExtractor() {
+    public UrlExtractorService() {
         patternUrl = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
     }
 

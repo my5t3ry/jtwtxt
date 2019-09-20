@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.util.Objects;
+
 /**
  * User: my5t3ry
  * Date: 20.09.19 04:58
@@ -31,5 +33,18 @@ public class TagPostContent implements IPostContent {
     public TagPostContent(final String url, final String description) {
         this.url = url;
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final IPostContent that = (IPostContent) o;
+        return Objects.equals(url, that.getUrl());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
     }
 }

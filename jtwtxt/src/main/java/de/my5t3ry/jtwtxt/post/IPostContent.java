@@ -9,7 +9,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface IPostContent {
-    public PostContentType getType();
-    public String getUrl();
-    public String getDescription();
+    PostContentType getType();
+
+    String getUrl();
+
+    String getDescription();
+
+    boolean equals(Object o);
 }

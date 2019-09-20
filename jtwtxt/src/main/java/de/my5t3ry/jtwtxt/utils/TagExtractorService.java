@@ -18,10 +18,8 @@ import java.util.regex.Pattern;
 public class TagExtractorService {
     @Autowired
     private TemplateService templateService;
-
     private final Pattern userTagPatternUrl;
     private final Pattern mediaTagPatternUrl;
-
     private static final String mediaTagRegex = "\\@\\<(.*?)\\>";
     private static final String userTagRegex = "\\@\\[(.*?)\\]";
 
@@ -46,16 +44,13 @@ public class TagExtractorService {
     }
 
     public String stripTags(String string) {
-        String result = "";
-        final String stripedString = string.replaceAll(mediaTagRegex, "");
+        String result = string.replaceAll(mediaTagRegex, "");
         final Matcher userTagMatcher = userTagPatternUrl.matcher(string);
         while (userTagMatcher.find()) {
             final String tag = userTagMatcher.group(1).replace("@[", "").replace("]", "");
             final String[] split = tag.split(":");
             if (split.length == 3) {
-                result = stripedString.replaceAll(userTagRegex, templateService.getContent(new TagPostContent("https://facebook.com/" + split[2], split[2], PostContentType.PERSON_TAG)));
-            } else {
-                result = stripedString;
+                result = result.replaceAll(userTagRegex, templateService.getContent(new TagPostContent("https://facebook.com/" + split[2], split[2], PostContentType.PERSON_TAG)));
             }
         }
         return result;

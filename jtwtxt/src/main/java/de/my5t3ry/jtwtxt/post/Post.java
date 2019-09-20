@@ -1,7 +1,7 @@
 package de.my5t3ry.jtwtxt.post;
 
-import de.my5t3ry.jtwtxt.utils.TagExtractorService;
 import de.my5t3ry.jtwtxt.utils.ExternalUrlExtractorService;
+import de.my5t3ry.jtwtxt.utils.TagExtractorService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +9,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: my5t3ry
@@ -31,7 +30,7 @@ public class Post {
     @Field(type = FieldType.Date, index = false)
     private Date createdOn;
     @Field(type = FieldType.Nested)
-    private List<IPostContent> content = new ArrayList<>();
+    private Set<IPostContent> content = new HashSet<>();
     @Field(type = FieldType.Text, index = false)
     private String title;
     @Field(type = FieldType.Text, index = false)
@@ -46,12 +45,15 @@ public class Post {
     private final TagExtractorService tagExtractorService = new TagExtractorService();
 
 
-
     public String getFormatedCreatedOn() {
         return dateParser.format(createdOn);
     }
 
     public void addContent(final List<? extends IPostContent> parseExternalContent) {
         this.content.addAll(parseExternalContent);
+    }
+
+    public boolean hasContent() {
+        return !StringUtils.isEmpty(copy) || content.size() > 0;
     }
 }

@@ -2,7 +2,6 @@ package de.my5t3ry.jtwtxt.html;
 
 import de.my5t3ry.jtwtxt.post.IPostContent;
 import de.my5t3ry.jtwtxt.post.Post;
-import de.my5t3ry.jtwtxt.post.PostContentType;
 import org.antlr.stringtemplate.StringTemplate;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -41,14 +40,12 @@ public class TemplateService {
         }
     }
 
-
     public String getPost(final Post curPost) {
         final Map<String, String> attributes = Map.of("copy", curPost.getCopy(),
                 "created", curPost.getFormatedCreatedOn(),
                 "content", getContent(curPost));
         return getTemplate("post.html", attributes);
     }
-
 
     private String getContent(final Post curPost) {
         final StringBuilder stringBuilder = new StringBuilder();
@@ -61,9 +58,19 @@ public class TemplateService {
     public String getContent(final IPostContent curContent) {
         final Map<String, String> attributes = Map.of("url", curContent.getUrl(),
                 "description", curContent.getDescription());
-        String contentTemplate = "content.html";
-        if (curContent.getType().equals(PostContentType.PERSON_TAG)) {
-            contentTemplate = "inline-content.html";
+        String contentTemplate;
+        switch (curContent.getType()) {
+            case YOUTUBE_EXTERNAL:
+                contentTemplate = "youtube-content.html";
+                break;
+            case PERSON_TAG:
+                contentTemplate = "inline-content.html";
+                break;
+            case SOUNDCLOUD_EXTERNAL:
+                contentTemplate = "soundcloud-content.html";
+                break;
+            default:
+                contentTemplate = "content.html";
         }
         return getTemplate(contentTemplate, attributes);
     }

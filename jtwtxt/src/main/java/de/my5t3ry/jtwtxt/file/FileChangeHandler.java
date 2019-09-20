@@ -1,5 +1,6 @@
 package de.my5t3ry.jtwtxt.file;
 
+import de.my5t3ry.jtwtxt.post.Post;
 import de.my5t3ry.jtwtxt.post.PostFactory;
 import de.my5t3ry.jtwtxt.post.PostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +49,11 @@ public class FileChangeHandler implements IHandleTwTxtFileChanges {
         final Integer[] i = {0};
         postLines.forEach(curPostLine -> {
             if (!StringUtils.isEmpty(curPostLine)) {
-                postRepository.save(postFactory.build(curPostLine));
-                i[0]++;
+                final Post curPost = postFactory.build(curPostLine);
+                if (curPost.hasContent()) {
+                    postRepository.save(curPost);
+                    i[0]++;
+                }
             }
         });
         log.info("--> ['" + i[0] + "']" + " posts imported");

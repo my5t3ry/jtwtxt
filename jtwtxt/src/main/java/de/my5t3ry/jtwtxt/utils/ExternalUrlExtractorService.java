@@ -38,7 +38,7 @@ public class ExternalUrlExtractorService {
     private PostContentType determineType(final String url) {
         if (url.contains("youtu")) {
             return PostContentType.YOUTUBE_EXTERNAL;
-        }            else if(url.contains("soundcloud")){
+        } else if (url.contains("soundcloud")) {
             return PostContentType.SOUNDCLOUD_EXTERNAL;
         }
         return PostContentType.EXTERNAL;

@@ -35,6 +35,13 @@ public class ExternalPostContent implements IPostContent {
         this.description = url;
     }
 
+    public String getUrl() {
+        if (type.equals(PostContentType.YOUTUBE_EXTERNAL)) {
+            return url.replace("watch?v=", "embed/");
+        }
+        return url;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
